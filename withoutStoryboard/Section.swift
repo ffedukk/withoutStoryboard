@@ -36,6 +36,10 @@ struct Section {
         self.header = header
     }
     
+    mutating func removeModel(at index: Int) -> TextModel {
+        return listOfModels.remove(at: index)
+    }
+    
     mutating func addModel() {
         let model = TextModel(text: "")
         listOfModels.append(model)

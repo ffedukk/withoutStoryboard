@@ -13,11 +13,11 @@ class ViewController: UIViewController {
     
 //    MARK: Properties
     
-    var button: UIButton!
-    var textField: UITextField!
-    var errorLabel: UILabel!
-    var textLabel: UILabel!
-    var tableView: UITableView!
+    var showButton: UIButton?
+    var textField: UITextField?
+    var errorLabel: UILabel?
+    var textLabel: UILabel?
+    var tableView: UITableView?
     
     let cellHeigh: CGFloat = 100
     let headerHeigh: CGFloat = 50
@@ -32,31 +32,39 @@ class ViewController: UIViewController {
         
         createItems()
         
+//        let a = Optional(1)
+//        let b = a
+//        print("a = \(a)\nb = \(b)")
+//
+//        if let c = a {
+//            print("c = \(c)")
+//        }
+        
         view.backgroundColor = .white
         title = "kuku"
         navigationItem.leftBarButtonItem = UIBarButtonItem(barButtonSystemItem: .edit,
                                                            target: self,
-                                                           action: #selector(buttonPressed))
+                                                           action: #selector(editButtonPressed))
         
         tableView = UITableView(frame: .zero)
-        tableView.delegate = self
-        tableView.dataSource = self
-        tableView.register(TableViewCell.self, forCellReuseIdentifier: "cell")
-        tableView.register(MyCustomHeader.self, forHeaderFooterViewReuseIdentifier: "sectionHeader")
-        tableView.translatesAutoresizingMaskIntoConstraints = false
-        view.addSubview(tableView)
-        tableView.reloadData()
+        tableView?.delegate = self
+        tableView?.dataSource = self
+        tableView?.register(TableViewCell.self, forCellReuseIdentifier: "cell")
+        tableView?.register(MyCustomHeader.self, forHeaderFooterViewReuseIdentifier: "sectionHeader")
+        tableView?.translatesAutoresizingMaskIntoConstraints = false
+        view.addSubview(tableView!)
+        tableView?.reloadData()
         
-        button = UIButton(type: .system)
-        button.setTitle("Show", for: .normal)
-        button.backgroundColor = .systemGreen
-        button.tintColor = .white
-        button.layer.cornerRadius = 15
-        button.isEnabled = false
-        button.translatesAutoresizingMaskIntoConstraints = false
-        view.addSubview(button)
+        showButton = UIButton(type: .system)
+        showButton?.setTitle("Show", for: .normal)
+        showButton?.backgroundColor = .systemGreen
+        showButton?.tintColor = .white
+        showButton?.layer.cornerRadius = 15
+        showButton?.isEnabled = false
+        showButton?.translatesAutoresizingMaskIntoConstraints = false
+        view.addSubview(showButton!)
         
-        button.addTarget(self, action: #selector(buttonPressed), for: .touchUpInside)
+        showButton?.addTarget(self, action: #selector(showButtonPressed), for: .touchUpInside)
         enableButton()
         
         constraintsInit()
@@ -66,24 +74,49 @@ class ViewController: UIViewController {
     // MARK: Constraints
     
     func constraintsInit() {
-        NSLayoutConstraint.activate([
-            
-            button.leadingAnchor.constraint(equalTo: view.readableContentGuide.leadingAnchor, constant: 20),
-            button.trailingAnchor.constraint(equalTo: view.readableContentGuide.trailingAnchor, constant: -20),
-            button.bottomAnchor.constraint(equalTo: view.readableContentGuide.bottomAnchor, constant: -10),
-            
-            tableView.topAnchor.constraint(equalTo: view.readableContentGuide.topAnchor),
-            tableView.leadingAnchor.constraint(equalTo: view.leadingAnchor),
-            tableView.trailingAnchor.constraint(equalTo: view.trailingAnchor),
-            tableView.bottomAnchor.constraint(equalTo: button.topAnchor, constant: -20),
-        ])
+        if let tableView = tableView,
+            let button = showButton {
+            NSLayoutConstraint.activate([
+                
+                button.leadingAnchor.constraint(equalTo: view.readableContentGuide.leadingAnchor,
+                                                constant: 20),
+                button.trailingAnchor.constraint(equalTo: view.readableContentGuide.trailingAnchor,
+                                                 constant: -20),
+                button.bottomAnchor.constraint(equalTo: view.readableContentGuide.bottomAnchor,
+                                               constant: -10),
+                
+                tableView.topAnchor.constraint(equalTo: view.readableContentGuide.topAnchor),
+                tableView.leadingAnchor.constraint(equalTo: view.leadingAnchor),
+                tableView.trailingAnchor.constraint(equalTo: view.trailingAnchor),
+                tableView.bottomAnchor.constraint(equalTo: button.topAnchor,
+                                                  constant: -20),
+            ])
+        }
+        
     }
     
-//    MARK: Logic Methods
+//    MARK: ButtonMethods
     
-    @objc func buttonPressed(){
+    @objc func showButtonPressed() {
         listOfSections.showingEnabled()
-        tableView.reloadData()
+        tableView?.reloadData()
+    }
+    
+    @objc func editButtonPressed() {
+        navigationItem.rightBarButtonItem = UIBarButtonItem(barButtonSystemItem: .done,
+                                                            target: self,
+                                                            action: #selector(doneButtonPressed))
+        navigationItem.leftBarButtonItems?.remove(at: navigationItem.leftBarButtonItems!.count - 1)
+        tableView?.setEditing(true, animated: true)
+        
+    }
+    
+    @objc func doneButtonPressed() {
+        navigationItem.leftBarButtonItem = UIBarButtonItem(barButtonSystemItem: .edit,
+                                                           target: self,
+                                                           action: #selector(editButtonPressed))
+        navigationItem.rightBarButtonItems?.remove(at: navigationItem.leftBarButtonItems!.count - 1)
+        tableView?.setEditing(false, animated: true)
     }
 }
 
@@ -105,7 +138,7 @@ extension ViewController: CellDelegateProtocol {
                 }
             }
         }
-        button.isEnabled = flag
+        showButton?.isEnabled = flag
     }
 }
 
@@ -115,13 +148,13 @@ extension ViewController: HeaderDelegateProtocol {
     func addRowInSection(section: Int) {
         let newModel = TextModel(text: "")
         listOfSections.listOfSections[section].listOfModels.insert(newModel, at: 0)
-        tableView.insertRows(at: [IndexPath(row: 0, section: section)], with: .top)
+        tableView?.insertRows(at: [IndexPath(row: 0, section: section)], with: .top)
     }
     
     func deleteRowFromSection(section: Int) {
         if listOfSections.listOfSections[section].listOfModels.count != 0 {
             listOfSections.listOfSections[section].listOfModels.remove(at: 0)
-            tableView.deleteRows(at: [IndexPath(row: 0, section: section)], with: .top)
+            tableView?.deleteRows(at: [IndexPath(row: 0, section: section)], with: .top)
         }
     }
 }
@@ -160,14 +193,27 @@ extension ViewController: UITableViewDataSource {
     func tableView(_ tableView: UITableView, heightForHeaderInSection section: Int) -> CGFloat {
         return headerHeigh
     }
+    
+    func tableView(_ tableView: UITableView, editingStyleForRowAt indexPath: IndexPath) -> UITableViewCell.EditingStyle {
+        return .none
+    }
+    
+    func tableView(_ tableView: UITableView, shouldIndentWhileEditingRowAt indexPath: IndexPath) -> Bool {
+        return false
+    }
 }
 
 //MARK: UITableViewDelegate Methods
 
 extension ViewController: UITableViewDelegate {
-    
+    func tableView(_ tableView: UITableView, moveRowAt sourceIndexPath: IndexPath, to destinationIndexPath: IndexPath) {
+        let selectedModel = listOfSections.listOfSections[sourceIndexPath.section].removeModel(at: sourceIndexPath.row)
+        listOfSections.listOfSections[destinationIndexPath.section].listOfModels.insert(selectedModel, at: destinationIndexPath.row)
+        
+    }
 }
 
+//MARK: Data
 
 extension ViewController {
     func createItems() {
