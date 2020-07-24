@@ -10,12 +10,14 @@ import UIKit
 
 protocol HeaderDelegateProtocol {
     func addRowInSection(section: Int)
+    func deleteRowFromSection(section: Int)
 }
 
 class MyCustomHeader: UITableViewHeaderFooterView {
     
     let titleLabel = UILabel()
     let addButton = UIButton(type: .contactAdd)
+    let deleteButton = UIButton(type: .detailDisclosure)
     
     var topColor = UIColor()
     var bottomColor = UIColor()
@@ -28,14 +30,18 @@ class MyCustomHeader: UITableViewHeaderFooterView {
         
         addButton.tintColor = .white
         titleLabel.textColor = .white
+        deleteButton.tintColor = .white
         contentView.backgroundColor = .clear
 
         addButton.translatesAutoresizingMaskIntoConstraints = false
         titleLabel.translatesAutoresizingMaskIntoConstraints = false
+        deleteButton.translatesAutoresizingMaskIntoConstraints = false
         contentView.addSubview(addButton)
         contentView.addSubview(titleLabel)
+        contentView.addSubview(deleteButton)
         
         addButton.addTarget(self, action: #selector(addRow), for: .touchUpInside)
+        deleteButton.addTarget(self, action: #selector(delRow), for: .touchUpInside)
         
         initConstraints()
     }
@@ -50,7 +56,10 @@ class MyCustomHeader: UITableViewHeaderFooterView {
             titleLabel.leadingAnchor.constraint(equalTo: contentView.leadingAnchor, constant: 30),
            
             addButton.trailingAnchor.constraint(equalTo: contentView.trailingAnchor, constant: -30),
-            addButton.centerYAnchor.constraint(equalTo: contentView.centerYAnchor)
+            addButton.centerYAnchor.constraint(equalTo: contentView.centerYAnchor),
+            
+            deleteButton.centerYAnchor.constraint(equalTo: contentView.centerYAnchor),
+            deleteButton.trailingAnchor.constraint(equalTo: addButton.leadingAnchor, constant: -10)
         ])
     }
     
@@ -69,5 +78,9 @@ class MyCustomHeader: UITableViewHeaderFooterView {
     
     @objc func addRow() {
         delegate?.addRowInSection(section: addButton.tag)
+    }
+    
+    @objc func delRow() {
+        delegate?.deleteRowFromSection(section: addButton.tag)
     }
 }
