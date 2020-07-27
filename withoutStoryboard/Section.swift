@@ -36,6 +36,10 @@ struct Section {
         self.header = header
     }
     
+    func numberOfModels() -> Int {
+        listOfModels.count
+    }
+    
     mutating func removeModel(at index: Int) -> TextModel {
         return listOfModels.remove(at: index)
     }
@@ -76,5 +80,13 @@ struct Section {
     
     mutating func setTitle(_ title: String) {
         self.title = title
+    }
+    
+    func isEmpty() -> Bool {
+        return listOfModels.isEmpty
+    }
+    
+    mutating func insert(_ model: TextModel, at index: Int) {
+        listOfModels.insert(model, at: index)
     }
 }

@@ -10,7 +10,7 @@ import UIKit
 
 //MARK: CellDelegateProrocol
 
-protocol CellDelegateProtocol {
+protocol CellDelegateProtocol: class {
     func updateListOfSections(with model: TextModel, section: Int, row: Int)
     func enableButton()
 }
@@ -19,29 +19,24 @@ class TableViewCell: UITableViewCell{
 
 //    MARK: Properties
     
-    var textField: UITextField!
-    var errorLabel: UILabel!
-    var textToShowLabel: UILabel!
+    var textField = UITextField(frame: .zero)
+    var errorLabel = UILabel(frame: .zero)
+    var textToShowLabel = UILabel(frame: .zero)
     
-    //let presenter = Presenter()
-    
-    var delegate: CellDelegateProtocol?
+    weak var delegate: CellDelegateProtocol?
     
 //    MARK: Initialization
     
     override init(style: UITableViewCell.CellStyle, reuseIdentifier: String?) {
         super.init(style: UITableViewCell.CellStyle.default, reuseIdentifier: "cell")
 
-        errorLabel = UILabel(frame: .zero)
         errorLabel.textColor = .red
         errorLabel.translatesAutoresizingMaskIntoConstraints = false
         addSubview(errorLabel)
         
-        textToShowLabel = UILabel(frame: .zero)
         textToShowLabel.translatesAutoresizingMaskIntoConstraints = false
         addSubview(textToShowLabel)
         
-        textField = UITextField(frame: .zero)
         textField.placeholder = "Something important"
         textField.borderStyle = .roundedRect
         textField.translatesAutoresizingMaskIntoConstraints = false
@@ -75,21 +70,15 @@ class TableViewCell: UITableViewCell{
 //    MARK: Logic Methods
     
     @objc func textEdited() {
-        
-        if let userText = textField.text, let supewView = self.superview as? UITableView {
-            let section = supewView.indexPath(for: self)?.section
-            let row = supewView.indexPath(for: self)?.row
+        if let userText = textField.text,
+            let supewView = self.superview as? UITableView,
+            let section = supewView.indexPath(for: self)?.section,
+            let row = supewView.indexPath(for: self)?.row {
+            
             let model = TextModel(text: userText)
-            
             setCell(with: model)
-            delegate?.updateListOfSections(with: model, section: section!, row: row!)
+            delegate?.updateListOfSections(with: model, section: section, row: row)
             delegate?.enableButton()
-            
-//            presenter.anotherCheck(text: userText, completion: {
-//                delegate?.unableButton()
-//            }) {
-//                delegate?.disableButton()
-//            }
         }
     }
     
@@ -101,6 +90,10 @@ class TableViewCell: UITableViewCell{
         } else {
             textToShowLabel.text = ""
         }
+    }
+    
+    deinit {
+        print("deolocated")
     }
     
 }

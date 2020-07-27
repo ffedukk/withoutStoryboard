@@ -38,6 +38,10 @@ struct SectionsList {
         return listOfSections.count
     }
     
+    func NumberOfModels(at index: Int) -> Int {
+        listOfSections[index].numberOfModels()
+    }
+    
     mutating func showingEnabled(){
         listOfSections = listOfSections.map { section -> Section in
             var switchSection = section
@@ -49,4 +53,17 @@ struct SectionsList {
     mutating func updateList(with model: TextModel, section: Int, row: Int) {
         listOfSections[section].listOfModels[row] = model
     }
+    
+    func isSectionEmpty(section: Int) -> Bool {
+        return listOfSections[section].isEmpty()
+    }
+    
+    mutating func removeModelInSection(section: Int, model: Int) -> TextModel {
+        return listOfSections[section].removeModel(at: model)
+    }
+    
+    mutating func insertModelInSection(model: TextModel, section: Int, row: Int) {
+        listOfSections[section].insert(model, at: row)
+    }
+    
 }

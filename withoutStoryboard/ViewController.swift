@@ -13,11 +13,8 @@ class ViewController: UIViewController {
     
 //    MARK: Properties
     
-    var showButton: UIButton?
-    var textField: UITextField?
-    var errorLabel: UILabel?
-    var textLabel: UILabel?
-    var tableView: UITableView?
+    var showButton = UIButton(type: .system)
+    var tableView = UITableView(frame: .zero)
     
     let cellHeigh: CGFloat = 100
     let headerHeigh: CGFloat = 50
@@ -32,39 +29,29 @@ class ViewController: UIViewController {
         
         createItems()
         
-//        let a = Optional(1)
-//        let b = a
-//        print("a = \(a)\nb = \(b)")
-//
-//        if let c = a {
-//            print("c = \(c)")
-//        }
-        
         view.backgroundColor = .white
         title = "kuku"
         navigationItem.leftBarButtonItem = UIBarButtonItem(barButtonSystemItem: .edit,
                                                            target: self,
                                                            action: #selector(editButtonPressed))
         
-        tableView = UITableView(frame: .zero)
-        tableView?.delegate = self
-        tableView?.dataSource = self
-        tableView?.register(TableViewCell.self, forCellReuseIdentifier: "cell")
-        tableView?.register(MyCustomHeader.self, forHeaderFooterViewReuseIdentifier: "sectionHeader")
-        tableView?.translatesAutoresizingMaskIntoConstraints = false
-        view.addSubview(tableView!)
-        tableView?.reloadData()
+        tableView.delegate = self
+        tableView.dataSource = self
+        tableView.register(TableViewCell.self, forCellReuseIdentifier: "cell")
+        tableView.register(MyCustomHeader.self, forHeaderFooterViewReuseIdentifier: "sectionHeader")
+        tableView.translatesAutoresizingMaskIntoConstraints = false
+        view.addSubview(tableView)
+        tableView.reloadData()
         
-        showButton = UIButton(type: .system)
-        showButton?.setTitle("Show", for: .normal)
-        showButton?.backgroundColor = .systemGreen
-        showButton?.tintColor = .white
-        showButton?.layer.cornerRadius = 15
-        showButton?.isEnabled = false
-        showButton?.translatesAutoresizingMaskIntoConstraints = false
-        view.addSubview(showButton!)
+        showButton.setTitle("Show", for: .normal)
+        showButton.backgroundColor = .systemGreen
+        showButton.tintColor = .white
+        showButton.layer.cornerRadius = 15
+        showButton.isEnabled = false
+        showButton.translatesAutoresizingMaskIntoConstraints = false
+        view.addSubview(showButton)
         
-        showButton?.addTarget(self, action: #selector(showButtonPressed), for: .touchUpInside)
+        showButton.addTarget(self, action: #selector(showButtonPressed), for: .touchUpInside)
         enableButton()
         
         constraintsInit()
@@ -74,32 +61,27 @@ class ViewController: UIViewController {
     // MARK: Constraints
     
     func constraintsInit() {
-        if let tableView = tableView,
-            let button = showButton {
-            NSLayoutConstraint.activate([
-                
-                button.leadingAnchor.constraint(equalTo: view.readableContentGuide.leadingAnchor,
-                                                constant: 20),
-                button.trailingAnchor.constraint(equalTo: view.readableContentGuide.trailingAnchor,
-                                                 constant: -20),
-                button.bottomAnchor.constraint(equalTo: view.readableContentGuide.bottomAnchor,
-                                               constant: -10),
-                
-                tableView.topAnchor.constraint(equalTo: view.readableContentGuide.topAnchor),
-                tableView.leadingAnchor.constraint(equalTo: view.leadingAnchor),
-                tableView.trailingAnchor.constraint(equalTo: view.trailingAnchor),
-                tableView.bottomAnchor.constraint(equalTo: button.topAnchor,
-                                                  constant: -20),
-            ])
-        }
-        
+        NSLayoutConstraint.activate([
+            showButton.leadingAnchor.constraint(equalTo: view.readableContentGuide.leadingAnchor,
+                                            constant: 20),
+            showButton.trailingAnchor.constraint(equalTo: view.readableContentGuide.trailingAnchor,
+                                             constant: -20),
+            showButton.bottomAnchor.constraint(equalTo: view.readableContentGuide.bottomAnchor,
+                                           constant: -10),
+            
+            tableView.topAnchor.constraint(equalTo: view.readableContentGuide.topAnchor),
+            tableView.leadingAnchor.constraint(equalTo: view.leadingAnchor),
+            tableView.trailingAnchor.constraint(equalTo: view.trailingAnchor),
+            tableView.bottomAnchor.constraint(equalTo: showButton.topAnchor,
+                                              constant: -20),
+        ])
     }
-    
+        
 //    MARK: ButtonMethods
     
     @objc func showButtonPressed() {
         listOfSections.showingEnabled()
-        tableView?.reloadData()
+        tableView.reloadData()
     }
     
     @objc func editButtonPressed() {
@@ -107,7 +89,7 @@ class ViewController: UIViewController {
                                                             target: self,
                                                             action: #selector(doneButtonPressed))
         navigationItem.leftBarButtonItems?.remove(at: navigationItem.leftBarButtonItems!.count - 1)
-        tableView?.setEditing(true, animated: true)
+        tableView.setEditing(true, animated: true)
         
     }
     
@@ -116,7 +98,7 @@ class ViewController: UIViewController {
                                                            target: self,
                                                            action: #selector(editButtonPressed))
         navigationItem.rightBarButtonItems?.remove(at: navigationItem.leftBarButtonItems!.count - 1)
-        tableView?.setEditing(false, animated: true)
+        tableView.setEditing(false, animated: true)
     }
 }
 
@@ -126,7 +108,6 @@ extension ViewController: CellDelegateProtocol {
     
     func updateListOfSections(with model: TextModel, section: Int, row: Int) {
         listOfSections.updateList(with: model, section: section, row: row)
-        print(listOfSections.listOfSections)
     }
     
     func enableButton() {
@@ -138,7 +119,7 @@ extension ViewController: CellDelegateProtocol {
                 }
             }
         }
-        showButton?.isEnabled = flag
+        showButton.isEnabled = flag
     }
 }
 
@@ -147,14 +128,14 @@ extension ViewController: CellDelegateProtocol {
 extension ViewController: HeaderDelegateProtocol {
     func addRowInSection(section: Int) {
         let newModel = TextModel(text: "")
-        listOfSections.listOfSections[section].listOfModels.insert(newModel, at: 0)
-        tableView?.insertRows(at: [IndexPath(row: 0, section: section)], with: .top)
+        listOfSections.insertModelInSection(model: newModel, section: section, row: 0)
+        tableView.insertRows(at: [IndexPath(row: 0, section: section)], with: .top)
     }
     
     func deleteRowFromSection(section: Int) {
-        if listOfSections.listOfSections[section].listOfModels.count != 0 {
-            listOfSections.listOfSections[section].listOfModels.remove(at: 0)
-            tableView?.deleteRows(at: [IndexPath(row: 0, section: section)], with: .top)
+        if !listOfSections.isSectionEmpty(section: section) {
+            listOfSections.removeModelInSection(section: section, model: 0)
+            tableView.deleteRows(at: [IndexPath(row: 0, section: section)], with: .top)
         }
     }
 }
@@ -163,11 +144,11 @@ extension ViewController: HeaderDelegateProtocol {
 
 extension ViewController: UITableViewDataSource {
     func numberOfSections(in tableView: UITableView) -> Int {
-        return listOfSections.listOfSections.count
+        return listOfSections.numberOfSections()
     }
     
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-        return listOfSections.listOfSections[section].listOfModels.count
+        return listOfSections.NumberOfModels(at: section)
     }
     
     func tableView(_ tableView: UITableView, viewForHeaderInSection section: Int) -> UIView? {
@@ -207,9 +188,11 @@ extension ViewController: UITableViewDataSource {
 
 extension ViewController: UITableViewDelegate {
     func tableView(_ tableView: UITableView, moveRowAt sourceIndexPath: IndexPath, to destinationIndexPath: IndexPath) {
-        let selectedModel = listOfSections.listOfSections[sourceIndexPath.section].removeModel(at: sourceIndexPath.row)
-        listOfSections.listOfSections[destinationIndexPath.section].listOfModels.insert(selectedModel, at: destinationIndexPath.row)
-        
+        let selectedModel = listOfSections.removeModelInSection(section: sourceIndexPath.section,
+                                                                model: sourceIndexPath.row)
+        listOfSections.insertModelInSection(model: selectedModel,
+                                            section: destinationIndexPath.section,
+                                            row: destinationIndexPath.row)
     }
 }
 

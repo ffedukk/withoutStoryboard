@@ -13,6 +13,7 @@ struct Header {
     var topColor: UIColor = .white
     var bottomColor: UIColor  = .white
     
+    
     init(title: String? = nil, topColor: UIColor, bottomColor: UIColor) {
         self.title = title
         self.topColor = topColor

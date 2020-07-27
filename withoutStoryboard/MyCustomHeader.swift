@@ -8,7 +8,7 @@
 
 import UIKit
 
-protocol HeaderDelegateProtocol {
+protocol HeaderDelegateProtocol: class {
     func addRowInSection(section: Int)
     func deleteRowFromSection(section: Int)
 }
@@ -23,7 +23,7 @@ class MyCustomHeader: UITableViewHeaderFooterView {
     var bottomColor = UIColor()
     var color = CAGradientLayer()
     
-    var delegate: HeaderDelegateProtocol?
+    weak var delegate: HeaderDelegateProtocol?
     
     override init(reuseIdentifier: String?) {
         super.init(reuseIdentifier: reuseIdentifier)
